@@ -57,17 +57,17 @@ class MainController(myo_analytics.Analytics):
     def on_yaw(self, yaw):
         self.yaw.set_current_value(yaw)
         if self.is_calibrated():
-            self.left_right_control.fly(self.yaw)
+            self.left_right_control.fly_at_angle(self.yaw)
 
     def on_pitch(self, pitch):
         self.pitch.set_current_value(pitch)
         if self.is_calibrated():
-            self.up_down_control.fly(self.pitch)
+            self.up_down_control.fly_at_angle(self.pitch)
 
     def on_roll(self, roll):
         self.roll.set_current_value(roll)
         if self.is_calibrated():
-            self.turn_left_right_control.fly(self.roll)
+            self.turn_left_right_control.fly_at_angle(self.roll)
 
     def on_pose(self, pose):
         print(pose)
@@ -93,11 +93,8 @@ class MainController(myo_analytics.Analytics):
             drone.trim()
             print("System needs to be realigned. Use Fist pose to realign and set base position")
 
-        elif pose == pose_t.wave_out:
-            pass
-
-        elif pose == pose_t.wave_in:
-            pass
+        elif pose == pose_t.wave_out or pose == pose_t.wave_in:
+            self.forward_backward_control.fly_straight(pose)
 
     def get_drone_emergency(self):
         return drone.navdata["drone_state"]["emergency_mask"]
@@ -114,7 +111,7 @@ class FlightController():
         self.opposite_action = opposite_action
         self.hover_toggle = False
 
-    def fly(self, tait_bryan_angle):
+    def fly_at_angle(self, tait_bryan_angle):
         delta = tait_bryan_angle.get_delta()
         if abs(delta) > self.threshold:
             if delta > 0:
@@ -122,6 +119,12 @@ class FlightController():
             else:
                 self._send_command(self.opposite_action)
             tait_bryan_angle.set_reference()
+
+    def fly_straight(self, pose):
+        if pose == pose_t.wave_out:
+            self._send_command(self.action)
+        elif pose == pose_t.wave_in:
+            self._send_command(self.opposite_action)
 
     def _send_command(self, command):
         if self.hover_toggle:
@@ -132,7 +135,6 @@ class FlightController():
             print(command.__name__)
             command()
             self.hover_toggle = True
-
 
 def run():
     print("Sync your Myo and make a Fist pose to calibrate the system")
