@@ -79,14 +79,8 @@ class Analytics():
 def quaternions_to_TaitBryan(x, y, z, w):
 
     yaw = -math.atan2(2*(x*y + z*w), x*x - y*y - z*z + w*w)
-    pitch = -math.asin(-2*x*z + 2*y*w)
+    pitch = -math.asin(max(min(-2*x*z + 2*y*w, 1), -1))
     roll = math.atan2(2*(y*z + x*w), -x*x - y*y + z*z + w*w)
-
-    if abs(pitch) > 1/2.0 * PI:
-        if pitch > 0:
-            pitch = 1/2.0 * PI
-        else:
-            pitch = -1/2.0 * PI
 
     return (yaw, pitch, roll)
 
