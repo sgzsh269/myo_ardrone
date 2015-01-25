@@ -32,3 +32,11 @@ Usage
 
 6. Perform the Wave-in pose to move the drone backward. a
    perform the Wave-in again to make the drone hover at the last position.
+
+
+License
+-------
+
+MIT License
+
+http://www.opensource.org/licenses/mit-license.php
