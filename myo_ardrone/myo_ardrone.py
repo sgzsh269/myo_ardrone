@@ -51,8 +51,8 @@ class MainController(myo_analytics.Analytics):
 
     def on_unsync(self):
         self.is_synced = False
-
-        drone.hover()
+        drone.reset()
+        print("Myo unsynced, drone being reset as a precaution!")
 
     def on_yaw(self, yaw):
         self.yaw.set_current_value(yaw)
